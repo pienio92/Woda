@@ -14,7 +14,7 @@
     <title>Punkty i Nagrody — iOS PWA</title>
 
     <!-- Ikona karty przeglądarki / zakładki -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💧</text></svg>">
     <!-- Ikona na ekranie początkowym iOS (PNG 180x180 obok index.html) -->
     <link rel="apple-touch-icon" id="apple-touch-icon" href="apple-touch-icon.png">
 
@@ -1792,14 +1792,14 @@
                 c.height = 180;
                 const ctx = c.getContext('2d');
                 const grad = ctx.createLinearGradient(0, 0, 180, 180);
-                grad.addColorStop(0, '#007AFF');
-                grad.addColorStop(1, '#5856D6');
+                grad.addColorStop(0, '#FFFFFF');
+                grad.addColorStop(1, '#D6EEFF');
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, 180, 180);
                 ctx.font = '95px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('⭐', 90, 96);
+                ctx.fillText('💧', 90, 96);
 
                 document.getElementById('apple-touch-icon').href = c.toDataURL('image/png');
             } catch (e) {}
