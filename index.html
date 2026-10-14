@@ -13,6 +13,11 @@
 
     <title>Punkty i Nagrody — iOS PWA</title>
 
+    <!-- Ikona karty przeglądarki / zakładki -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+    <!-- Ikona na ekranie początkowym iOS (PNG 180x180 obok index.html) -->
+    <link rel="apple-touch-icon" id="apple-touch-icon" href="apple-touch-icon.png">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -1774,6 +1779,13 @@
 
         // Generowanie dynamicznej ikony iOS (apple-touch-icon) na bazie Canvasu
         function setupIosIcon() {
+            // Jeśli plik apple-touch-icon.png istnieje, używamy go; inaczej generujemy ikonę z Canvasu
+            const probe = new Image();
+            probe.onerror = generateCanvasIcon;
+            probe.src = document.getElementById('apple-touch-icon').href;
+        }
+
+        function generateCanvasIcon() {
             try {
                 const c = document.createElement('canvas');
                 c.width = 180;
@@ -1789,10 +1801,7 @@
                 ctx.textBaseline = 'middle';
                 ctx.fillText('⭐', 90, 96);
 
-                const link = document.createElement('link');
-                link.rel = 'apple-touch-icon';
-                link.href = c.toDataURL('image/png');
-                document.head.appendChild(link);
+                document.getElementById('apple-touch-icon').href = c.toDataURL('image/png');
             } catch (e) {}
         }
 
