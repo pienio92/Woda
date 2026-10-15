@@ -16,7 +16,7 @@
     <!-- Ikona karty przeglądarki / zakładki -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💧</text></svg>">
     <!-- Ikona na ekranie początkowym iOS (PNG 180x180 obok index.html) -->
-    <link rel="apple-touch-icon" id="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -144,7 +144,7 @@
         <div class="max-w-lg mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
             <!-- Tytuł aktywnej zakładki + przycisk trybu ciemnego -->
             <div class="flex items-center gap-2.5">
-                <h1 id="header-title" class="text-xl font-bold tracking-tight">Dzień i Zadania</h1>
+                <h1 id="header-title" class="text-lg sm:text-xl font-bold tracking-tight whitespace-nowrap">Dzień i Zadania</h1>
                 <button onclick="toggleTheme()" aria-label="Przełącz motyw" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-sm active:scale-90 transition-transform">
                     <span id="theme-icon">🌙</span>
                 </button>
@@ -160,11 +160,11 @@
                 </div>
 
                 <!-- Główne saldo punktów -->
-                <button onclick="openBalanceModal()" class="flex items-center gap-1.5 bg-amber-400/20 dark:bg-amber-400/25 border border-amber-500/30 text-amber-800 dark:text-amber-300 px-3 py-1 rounded-full text-sm font-bold shadow-sm active:scale-95 transition-transform" title="Kliknij, aby skorygować saldo">
+                <div class="flex items-center gap-1.5 bg-amber-400/20 dark:bg-amber-400/25 border border-amber-500/30 text-amber-800 dark:text-amber-300 px-3 py-1 rounded-full text-sm font-bold shadow-sm">
                     <span class="text-base leading-none">⭐</span>
                     <span id="points-counter" class="tabular-nums">0</span>
                     <span class="text-xs font-semibold opacity-80">pkt</span>
-                </button>
+                </div>
             </div>
         </div>
     </header>
@@ -224,10 +224,10 @@
             </div>
 
             <!-- Pasek wybranego dnia i podsumowanie punktów z tego dnia -->
-            <div class="flex items-center justify-between px-1">
-                <div>
+            <div class="flex items-center justify-between gap-2 px-1">
+                <div class="min-w-0">
                     <p class="text-xs font-semibold uppercase tracking-wider text-ios-gray" id="selected-date-subtitle">WYBRANY DZIEŃ</p>
-                    <h3 id="selected-date-title" class="text-lg font-bold">Dzisiaj</h3>
+                    <h3 id="selected-date-title" class="text-base font-bold leading-snug">Dzisiaj</h3>
                 </div>
                 <div class="flex items-center gap-2">
                     <span id="day-points-badge" class="text-xs font-semibold px-3 py-1 rounded-full bg-ios-green/15 text-ios-green">
@@ -258,7 +258,7 @@
         <section id="tab-rewards" class="space-y-4 hidden">
             
             <!-- Karta informacyjna salda w sklepie -->
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-4 text-white shadow-md">
                 <div>
                     <p class="text-xs font-medium text-blue-100 uppercase tracking-wider">Dostępne do wymiany</p>
                     <div class="flex items-baseline gap-1.5 mt-0.5">
@@ -267,9 +267,6 @@
                     </div>
                     <p class="text-xs text-blue-100/90 mt-1">Wymieniaj zdobyte punkty na ulubione przyjemności!</p>
                 </div>
-                <button onclick="openRewardModal()" class="bg-white text-blue-600 font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-sm active:scale-95 transition-transform shrink-0">
-                    ＋ Nowa nagroda
-                </button>
             </div>
 
             <!-- Lista nagród -->
@@ -325,14 +322,6 @@
                         <span class="flex items-center gap-3">
                             <span class="w-7 h-7 rounded-lg bg-ios-blue text-white flex items-center justify-center text-sm">📲</span>
                             <span>Jak dodać aplikację na ekran iPhone'a (PWA)</span>
-                        </span>
-                        <span class="text-ios-gray">›</span>
-                    </button>
-
-                    <button onclick="openBalanceModal()" class="w-full px-4 py-3.5 flex items-center justify-between active:bg-black/5 dark:active:bg-white/5 transition-colors text-left">
-                        <span class="flex items-center gap-3">
-                            <span class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center text-sm">⚖️</span>
-                            <span>Ręczna korekta salda punktów</span>
                         </span>
                         <span class="text-ios-gray">›</span>
                     </button>
@@ -398,63 +387,6 @@
          MODALE (iOS Bottom Sheets)
          ========================================== -->
 
-    <!-- Modal: Dodaj / Edytuj Nagrodę -->
-    <div id="modal-reward" class="fixed inset-0 z-40 bg-black/50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-ios-card dark:bg-ios-darkCard w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 pb-8 sm:pb-5 space-y-4 animate-sheet shadow-2xl">
-            <div class="flex items-center justify-between">
-                <button onclick="closeModal('modal-reward')" class="text-sm text-ios-gray font-medium">Anuluj</button>
-                <h3 id="modal-reward-title" class="text-base font-bold">Nowa nagroda</h3>
-                <button onclick="saveReward()" class="text-sm text-ios-blue font-bold">Zapisz</button>
-            </div>
-            <input type="hidden" id="reward-edit-id">
-            
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-ios-gray uppercase mb-1">Nazwa nagrody</label>
-                    <input type="text" id="reward-input-title" placeholder="np. Wieczór z filmem / Burger" class="w-full px-3.5 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ios-blue">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-ios-gray uppercase mb-1">Koszt (w punktach)</label>
-                        <input type="number" id="reward-input-cost" min="1" max="100000" placeholder="50" class="w-full px-3.5 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-sm font-bold focus:outline-none focus:ring-2 focus:ring-ios-blue">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-ios-gray uppercase mb-1">Ikona (Emoji)</label>
-                        <input type="text" id="reward-input-icon" maxlength="4" placeholder="🍕" class="w-full px-3.5 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-center text-lg focus:outline-none focus:ring-2 focus:ring-ios-blue">
-                    </div>
-                </div>
-
-                <div>
-                    <p class="text-[11px] text-ios-gray mb-1.5">Szybki wybór ikony:</p>
-                    <div class="flex flex-wrap gap-1.5" id="reward-emoji-picker">
-                        <!-- Wypełniane przez JS -->
-                    </div>
-                </div>
-            </div>
-
-            <button id="btn-delete-reward" onclick="deleteRewardFromModal()" class="w-full py-2.5 rounded-xl bg-ios-red/10 text-ios-red text-sm font-semibold hidden active:scale-98">
-                Usuń tę nagrodę
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal: Ręczna korekta salda -->
-    <div id="modal-balance" class="fixed inset-0 z-40 bg-black/50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-ios-card dark:bg-ios-darkCard w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 pb-8 sm:pb-5 space-y-4 animate-sheet shadow-2xl">
-            <div class="flex items-center justify-between">
-                <button onclick="closeModal('modal-balance')" class="text-sm text-ios-gray font-medium">Anuluj</button>
-                <h3 class="text-base font-bold">Korekta salda punktów</h3>
-                <button onclick="saveManualBalance()" class="text-sm text-ios-blue font-bold">Zatwierdź</button>
-            </div>
-            <p class="text-xs text-ios-gray">Wpisz nową wartość swojego aktualnego salda punktów. Zmiana zostanie zapisana w historii.</p>
-            <div>
-                <label class="block text-xs font-semibold text-ios-gray uppercase mb-1">Nowe saldo punktów</label>
-                <input type="number" id="balance-input-value" min="0" max="999999" class="w-full px-3.5 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-lg font-bold focus:outline-none focus:ring-2 focus:ring-ios-blue">
-            </div>
-        </div>
-    </div>
-
     <!-- Modal: Potwierdzenie / Dialog w stylu iOS -->
     <div id="modal-confirm" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-6">
         <div class="bg-ios-card dark:bg-ios-darkElevated w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl animate-pop text-center">
@@ -512,8 +444,8 @@
     <script>
         const STORAGE_KEY = 'ios_water_points_rewards_pwa_v2';
         const LEGACY_STORAGE_KEY = 'ios_points_rewards_pwa_v1';
-        // Podbij po zmianie domyślnej listy nagród, aby nadpisać zapisaną listę
-        const REWARDS_VERSION = 2;
+        // Ile dni wstecz (poza dzisiejszym) można zaliczać / cofać zadanie
+        const MAX_DAYS_BACK = 3;
 
         // Stałe pojedyncze zadanie (brak możliwości edycji i usuwania)
         const FIXED_TASK = {
@@ -522,20 +454,15 @@
             icon: '💧'
         };
 
-        const REWARD_EMOJIS = ['🍕', '🎬', '🎮', '🍦', '☕', '🛍️', '🍔', '🎧', '🏖️', '🍰', '🎲', '🎁'];
-
         // Domyślne dane startowe
         function getDefaultState() {
             return {
                 theme: 'light',
-                rewardsVersion: REWARDS_VERSION,
-                // Czy bonus +1 pkt za 7 dni sumuje się z bonusem +1 pkt za 5 dni roboczych (łącznie +2 pkt ekstra)
-                stackWeeklyBonuses: true,
-                // Ręczna korekta salda punktów (dodawana do dynamicznie wyliczonego salda)
+                // Historyczna korekta salda ze starszych wersji (edycja wyłączona)
                 manualAdjustment: 0,
                 // Zaliczone dni w formacie { "YYYY-MM-DD": true }
                 completedDays: {},
-                // Lista nagród (w pełni edytowalna)
+                // Lista nagród (zawsze z kodu - edycja tylko tutaj)
                 rewards: [
                     { id: 'r1', title: 'Wybór filmu lub serialu', cost: 5, icon: '🎬' },
                     { id: 'r2', title: 'SPA w Wannie', cost: 10, icon: '🏖️' },
@@ -582,16 +509,7 @@
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (raw) {
-                    const parsed = JSON.parse(raw);
-                    const rewardsUpToDate = parsed.rewardsVersion === REWARDS_VERSION && Array.isArray(parsed.rewards);
-                    return {
-                        ...getDefaultState(),
-                        ...parsed,
-                        rewardsVersion: REWARDS_VERSION,
-                        completedDays: parsed.completedDays || {},
-                        rewards: rewardsUpToDate ? parsed.rewards : getDefaultState().rewards,
-                        transactions: Array.isArray(parsed.transactions) ? parsed.transactions : []
-                    };
+                    return normalizeState(JSON.parse(raw));
                 }
 
                 // Sprawdzenie, czy istnieją dane z poprzedniej wersji do migracji
@@ -606,12 +524,10 @@
                             }
                         });
                     }
-                    return {
-                        ...getDefaultState(),
+                    return normalizeState({
                         theme: legacy.theme || 'light',
-                        completedDays: migratedDays,
-                        rewards: Array.isArray(legacy.rewards) ? legacy.rewards : getDefaultState().rewards
-                    };
+                        completedDays: migratedDays
+                    });
                 }
 
                 return getDefaultState();
@@ -619,6 +535,24 @@
                 console.error('Błąd odczytu localStorage:', e);
                 return getDefaultState();
             }
+        }
+
+        function normalizeState(data) {
+            const defaults = getDefaultState();
+            return {
+                theme: data.theme === 'dark' ? 'dark' : 'light',
+                manualAdjustment: Number(data.manualAdjustment) || 0,
+                completedDays: data.completedDays && typeof data.completedDays === 'object' ? data.completedDays : {},
+                rewards: defaults.rewards,
+                transactions: Array.isArray(data.transactions) ? data.transactions : []
+            };
+        }
+
+        // Dzień można zaliczyć/cofnąć tylko od dziś do MAX_DAYS_BACK dni wstecz
+        function isDateEditable(dateKey) {
+            const today = parseDateKey(getTodayDateKey());
+            const diffDays = Math.round((today - parseDateKey(dateKey)) / 86400000);
+            return diffDays >= 0 && diffDays <= MAX_DAYS_BACK;
         }
 
         function saveState() {
@@ -685,15 +619,9 @@
                 }
             });
 
-            let bonus5Points = has5WorkdayStreak ? 1 : 0;
-            let bonus7Points = hasFull7DayStreak ? 1 : 0;
-
-            let totalBonus = 0;
-            if (state.stackWeeklyBonuses) {
-                totalBonus = bonus5Points + bonus7Points; // +1 za 5 dni oraz +1 za 7 dni = +2 pkt
-            } else {
-                totalBonus = hasFull7DayStreak ? 1 : (has5WorkdayStreak ? 1 : 0);
-            }
+            const bonus5Points = has5WorkdayStreak ? 1 : 0;
+            const bonus7Points = hasFull7DayStreak ? 1 : 0;
+            const totalBonus = bonus5Points + bonus7Points;
 
             return {
                 mondayKey,
@@ -749,55 +677,29 @@
                 });
 
                 // Zdarzenia bonusowe
-                if (state.stackWeeklyBonuses) {
-                    if (weekInfo.has5WorkdayStreak) {
-                        const fridayKey = weekInfo.weekKeys[4];
-                        generatedEarnEvents.push({
-                            id: 'bonus5_' + mondayKey,
-                            type: 'earn',
-                            title: 'Bonus: Streak 5 dni roboczych (Pon–Pt)',
-                            icon: '🔥',
-                            points: 1,
-                            dateKey: fridayKey,
-                            sortKey: fridayKey + '_2'
-                        });
-                    }
-                    if (weekInfo.hasFull7DayStreak) {
-                        const sundayKey = weekInfo.weekKeys[6];
-                        generatedEarnEvents.push({
-                            id: 'bonus7_' + mondayKey,
-                            type: 'earn',
-                            title: 'Bonus: Pełny tydzień 7 dni (Pon–Nd)',
-                            icon: '🏆',
-                            points: 1,
-                            dateKey: sundayKey,
-                            sortKey: sundayKey + '_3'
-                        });
-                    }
-                } else {
-                    if (weekInfo.hasFull7DayStreak) {
-                        const sundayKey = weekInfo.weekKeys[6];
-                        generatedEarnEvents.push({
-                            id: 'bonus7_' + mondayKey,
-                            type: 'earn',
-                            title: 'Bonus: Pełny tydzień 7 dni (Pon–Nd)',
-                            icon: '🏆',
-                            points: 1,
-                            dateKey: sundayKey,
-                            sortKey: sundayKey + '_3'
-                        });
-                    } else if (weekInfo.has5WorkdayStreak) {
-                        const fridayKey = weekInfo.weekKeys[4];
-                        generatedEarnEvents.push({
-                            id: 'bonus5_' + mondayKey,
-                            type: 'earn',
-                            title: 'Bonus: Streak 5 dni roboczych (Pon–Pt)',
-                            icon: '🔥',
-                            points: 1,
-                            dateKey: fridayKey,
-                            sortKey: fridayKey + '_2'
-                        });
-                    }
+                if (weekInfo.has5WorkdayStreak) {
+                    const fridayKey = weekInfo.weekKeys[4];
+                    generatedEarnEvents.push({
+                        id: 'bonus5_' + mondayKey,
+                        type: 'earn',
+                        title: 'Bonus: Streak 5 dni roboczych (Pon–Pt)',
+                        icon: '🔥',
+                        points: 1,
+                        dateKey: fridayKey,
+                        sortKey: fridayKey + '_2'
+                    });
+                }
+                if (weekInfo.hasFull7DayStreak) {
+                    const sundayKey = weekInfo.weekKeys[6];
+                    generatedEarnEvents.push({
+                        id: 'bonus7_' + mondayKey,
+                        type: 'earn',
+                        title: 'Bonus: Pełny tydzień 7 dni (Pon–Nd)',
+                        icon: '🏆',
+                        points: 1,
+                        dateKey: sundayKey,
+                        sortKey: sundayKey + '_3'
+                    });
                 }
             });
 
@@ -1061,14 +963,26 @@
             const isDone = Boolean(state.completedDays[selectedDateKey]);
             const dayBasePoints = getBasePointsForDate(selectedDateKey);
             const isWeekend = getMondayBasedDayIndex(selectedDateKey) >= 5;
+            const editable = isDateEditable(selectedDateKey);
+            const isFuture = selectedDateKey > getTodayDateKey();
+            let hintText;
+            if (!editable) {
+                hintText = isFuture
+                    ? 'Tego dnia jeszcze nie można zaliczyć.'
+                    : `Edycja zablokowana (możliwa maks. ${MAX_DAYS_BACK} dni wstecz).`;
+            } else {
+                hintText = isDone ? 'Wykonane! Dotknij, aby cofnąć.' : 'Dotknij, aby zaliczyć wodę.';
+            }
 
             const badgeEl = document.getElementById('day-points-badge');
             badgeEl.textContent = isDone
                 ? `Zaliczono: +${dayBasePoints} pkt`
-                : `Do zdobycia: +${dayBasePoints} pkt (${isWeekend ? 'Weekend' : 'Pn–Pt'})`;
+                : (editable ? `Do zdobycia: +${dayBasePoints} pkt` : '🔒 Zablokowany');
             badgeEl.className = isDone
-                ? 'text-xs font-semibold px-3 py-1 rounded-full bg-ios-green/15 text-ios-green'
-                : 'text-xs font-semibold px-3 py-1 rounded-full bg-ios-blue/10 text-ios-blue';
+                ? 'text-xs font-semibold px-3 py-1 rounded-full bg-ios-green/15 text-ios-green whitespace-nowrap'
+                : (editable
+                    ? 'text-xs font-semibold px-3 py-1 rounded-full bg-ios-blue/10 text-ios-blue whitespace-nowrap'
+                    : 'text-xs font-semibold px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-ios-gray whitespace-nowrap');
 
             const listEl = document.getElementById('tasks-list');
             listEl.innerHTML = '';
@@ -1081,8 +995,8 @@
             }`;
 
             card.innerHTML = `
-                <button type="button" onclick="toggleDayCompletion()" class="w-full flex items-center justify-between gap-3.5 text-left min-h-[56px] active:scale-[0.99] transition-transform">
-                    <div class="flex items-center gap-3.5 min-w-0">
+                <button type="button" ${editable ? 'onclick="toggleDayCompletion()"' : 'disabled'} class="w-full flex items-center justify-between gap-3 text-left min-h-[56px] transition-transform ${editable ? 'active:scale-[0.99]' : 'opacity-60 cursor-not-allowed'}">
+                    <div class="flex items-center gap-3 min-w-0">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${
                             isDone
                                 ? 'bg-ios-green text-white shadow-sm animate-check'
@@ -1090,11 +1004,11 @@
                         }">
                             ${isDone ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
                         </div>
-                        <div class="w-12 h-12 rounded-2xl bg-sky-500/10 dark:bg-sky-400/15 flex items-center justify-center text-2xl shrink-0">
+                        <div class="w-11 h-11 rounded-2xl bg-sky-500/10 dark:bg-sky-400/15 flex items-center justify-center text-2xl shrink-0">
                             ${FIXED_TASK.icon}
                         </div>
                         <div class="min-w-0">
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                                 <p class="text-base font-bold ${isDone ? 'text-ios-green' : ''}">${FIXED_TASK.title}</p>
                                 <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                                     isWeekend
@@ -1104,9 +1018,7 @@
                                     ${isWeekend ? 'Weekend • 2 pkt' : 'Dzień roboczy • 1 pkt'}
                                 </span>
                             </div>
-                            <p class="text-xs text-ios-gray mt-0.5">
-                                ${isDone ? 'Zadanie wykonane w tym dniu! Dotknij, aby cofnąć.' : 'Dotknij tutaj, aby zaliczyć dzisiejszą wodę.'}
-                            </p>
+                            <p class="text-xs text-ios-gray mt-0.5">${hintText}</p>
                         </div>
                     </div>
                     <div class="shrink-0 text-right">
@@ -1156,10 +1068,6 @@
                     </button>
                 `;
             }).join('');
-
-            const bonus7Label = state.stackWeeklyBonuses
-                ? '+1 pkt (łącznie +2 pkt bonusów)'
-                : '+1 pkt (zamiast bonusu 5 dni)';
 
             container.innerHTML = `
                 <div class="flex items-center justify-between">
@@ -1213,31 +1121,15 @@
                         }">+1 pkt</span>
                     </div>
                 </div>
-
-                <!-- Dyskretny przełącznik sumowania bonusów tygodniowych -->
-                <div class="pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[11px] text-ios-gray">
-                    <span>Tryb bonusu 7 dni: <strong>${bonus7Label}</strong></span>
-                    <button type="button" onclick="toggleBonusStackingMode()" class="text-ios-blue font-semibold hover:underline">
-                        Zmień
-                    </button>
-                </div>
             `;
-        }
-
-        function toggleBonusStackingMode() {
-            state.stackWeeklyBonuses = !state.stackWeeklyBonuses;
-            saveState();
-            renderAll();
-            showToast(
-                state.stackWeeklyBonuses
-                    ? 'Bonusy sumują się (+1 za 5 dni i +1 za 7 dni)'
-                    : 'Bonus za 7 dni zastępuje bonus 5-dniowy (maks. +1 pkt)',
-                '⚙️'
-            );
         }
 
         // Zaliczenie lub cofnięcie zaliczenia wybranego dnia
         function toggleDayCompletion() {
+            if (!isDateEditable(selectedDateKey)) {
+                showToast(`Można edytować tylko ${MAX_DAYS_BACK} dni wstecz`, '🔒');
+                return;
+            }
             const mondayKey = getWeekMondayKey(selectedDateKey);
             const beforeWeek = evaluateWeek(mondayKey);
             const basePts = getBasePointsForDate(selectedDateKey);
@@ -1295,25 +1187,20 @@
                 card.className = 'bg-ios-card dark:bg-ios-darkCard rounded-2xl p-4 shadow-sm border border-black/5 dark:border-white/5 space-y-3';
 
                 card.innerHTML = `
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="flex items-center gap-3.5 min-w-0">
-                            <div class="w-12 h-12 rounded-2xl bg-ios-bg dark:bg-ios-darkElevated flex items-center justify-center text-2xl shrink-0">
-                                ${escapeHtml(reward.icon || '🎁')}
-                            </div>
-                            <div class="min-w-0">
-                                <h3 class="text-sm font-bold truncate">${escapeHtml(reward.title)}</h3>
-                                <div class="flex items-center gap-1.5 mt-0.5">
-                                    <span class="text-xs font-extrabold text-amber-600 dark:text-amber-400">⭐ ${reward.cost} pkt</span>
-                                    <button onclick="openRewardModal('${reward.id}')" class="text-[11px] text-ios-gray hover:text-ios-blue underline ml-1">Edytuj</button>
-                                </div>
-                            </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-ios-bg dark:bg-ios-darkElevated flex items-center justify-center text-2xl shrink-0">
+                            ${escapeHtml(reward.icon || '🎁')}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-bold leading-snug break-words">${escapeHtml(reward.title)}</h3>
+                            <span class="text-xs font-extrabold text-amber-600 dark:text-amber-400 whitespace-nowrap">⭐ ${reward.cost} pkt</span>
                         </div>
 
                         <button
                             type="button"
                             onclick="confirmRedeemReward('${reward.id}')"
                             ${canAfford ? '' : 'disabled'}
-                            class="px-4 py-2 rounded-xl text-xs font-bold shrink-0 transition-transform ${
+                            class="px-3 py-2 rounded-xl text-xs font-bold shrink-0 whitespace-nowrap transition-transform ${
                                 canAfford
                                     ? 'bg-ios-green text-white shadow-sm active:scale-95'
                                     : 'bg-black/5 dark:bg-white/10 text-ios-gray cursor-not-allowed'
@@ -1384,88 +1271,6 @@
             showToast(`Cofnięto wpis: ${removed.title}`, '↩️');
         }
 
-        function openRewardModal(rewardId = null) {
-            const modal = document.getElementById('modal-reward');
-            const titleEl = document.getElementById('modal-reward-title');
-            const idInput = document.getElementById('reward-edit-id');
-            const nameInput = document.getElementById('reward-input-title');
-            const costInput = document.getElementById('reward-input-cost');
-            const iconInput = document.getElementById('reward-input-icon');
-            const deleteBtn = document.getElementById('btn-delete-reward');
-
-            const picker = document.getElementById('reward-emoji-picker');
-            picker.innerHTML = REWARD_EMOJIS.map(em => `
-                <button type="button" onclick="document.getElementById('reward-input-icon').value = '${em}'" class="w-9 h-9 rounded-lg bg-ios-bg dark:bg-ios-darkElevated text-lg flex items-center justify-center active:scale-90">
-                    ${em}
-                </button>
-            `).join('');
-
-            if (rewardId) {
-                const reward = state.rewards.find(r => r.id === rewardId);
-                if (!reward) return;
-                titleEl.textContent = 'Edytuj nagrodę';
-                idInput.value = reward.id;
-                nameInput.value = reward.title;
-                costInput.value = reward.cost;
-                iconInput.value = reward.icon || '🎁';
-                deleteBtn.classList.remove('hidden');
-            } else {
-                titleEl.textContent = 'Nowa nagroda';
-                idInput.value = '';
-                nameInput.value = '';
-                costInput.value = '10';
-                iconInput.value = '🎁';
-                deleteBtn.classList.add('hidden');
-            }
-
-            modal.classList.remove('hidden');
-        }
-
-        function saveReward() {
-            const id = document.getElementById('reward-edit-id').value;
-            const title = document.getElementById('reward-input-title').value.trim();
-            const cost = parseInt(document.getElementById('reward-input-cost').value, 10);
-            const icon = document.getElementById('reward-input-icon').value.trim() || '🎁';
-
-            if (!title) {
-                showToast('Wpisz nazwę nagrody', '⚠️');
-                return;
-            }
-            if (isNaN(cost) || cost <= 0) {
-                showToast('Podaj dodatni koszt punktowy', '⚠️');
-                return;
-            }
-
-            if (id) {
-                const idx = state.rewards.findIndex(r => r.id === id);
-                if (idx !== -1) {
-                    state.rewards[idx] = { ...state.rewards[idx], title, cost, icon };
-                }
-            } else {
-                state.rewards.push({
-                    id: 'r_' + Date.now(),
-                    title,
-                    cost,
-                    icon
-                });
-            }
-
-            saveState();
-            closeModal('modal-reward');
-            renderAll();
-            showToast('Nagroda zapisana', '🎁');
-        }
-
-        function deleteRewardFromModal() {
-            const id = document.getElementById('reward-edit-id').value;
-            if (!id) return;
-            state.rewards = state.rewards.filter(r => r.id !== id);
-            saveState();
-            closeModal('modal-reward');
-            renderAll();
-            showToast('Nagroda usunięta', '🗑️');
-        }
-
         // ==========================================
         // HISTORIA, STATYSTYKI I KOREKTA SALDA
         // ==========================================
@@ -1492,7 +1297,7 @@
 
             const txEvents = state.transactions.map(t => ({
                 ...t,
-                canUndo: true,
+                canUndo: t.type === 'spend',
                 sortKey: (t.dateKey || '') + '_9_' + (t.timestamp || 0)
             }));
 
@@ -1526,7 +1331,7 @@
                     <div class="flex items-center gap-3 min-w-0">
                         <span class="text-xl shrink-0">${escapeHtml(item.icon || '⭐')}</span>
                         <div class="min-w-0">
-                            <p class="text-xs font-semibold truncate">${escapeHtml(item.title)}</p>
+                            <p class="text-xs font-semibold leading-snug break-words">${escapeHtml(item.title)}</p>
                             <p class="text-[11px] text-ios-gray">${dateDisplay}</p>
                         </div>
                     </div>
@@ -1541,37 +1346,6 @@
                 `;
                 listEl.appendChild(row);
             });
-        }
-
-        function openBalanceModal() {
-            document.getElementById('balance-input-value').value = getCurrentPointsBalance();
-            document.getElementById('modal-balance').classList.remove('hidden');
-        }
-
-        function saveManualBalance() {
-            const newVal = parseInt(document.getElementById('balance-input-value').value, 10);
-            if (isNaN(newVal) || newVal < 0) {
-                showToast('Podaj prawidłową liczbę punktów', '⚠️');
-                return;
-            }
-            const currentBalance = getCurrentPointsBalance();
-            const diff = newVal - currentBalance;
-            if (diff !== 0) {
-                state.manualAdjustment = (Number(state.manualAdjustment) || 0) + diff;
-                state.transactions.unshift({
-                    id: 'tx_' + Date.now(),
-                    type: 'adjust',
-                    title: 'Ręczna korekta salda',
-                    icon: '⚖️',
-                    points: diff,
-                    dateKey: getTodayDateKey(),
-                    timestamp: Date.now()
-                });
-                saveState();
-                renderAll();
-                showToast('Saldo zaktualizowane', '⚖️');
-            }
-            closeModal('modal-balance');
         }
 
         // Eksport i import kopii zapasowej JSON
@@ -1604,13 +1378,7 @@
                         showToast('Nieprawidłowy format pliku kopii', '⚠️');
                         return;
                     }
-                    state = {
-                        ...getDefaultState(),
-                        ...imported,
-                        completedDays: imported.completedDays || {},
-                        rewards: Array.isArray(imported.rewards) ? imported.rewards : getDefaultState().rewards,
-                        transactions: Array.isArray(imported.transactions) ? imported.transactions : []
-                    };
+                    state = normalizeState(imported);
                     saveState();
                     renderAll();
                     showToast('Kopia zapasowa została wczytana!', '✅');
@@ -1777,38 +1545,9 @@
             requestAnimationFrame(animate);
         }
 
-        // Generowanie dynamicznej ikony iOS (apple-touch-icon) na bazie Canvasu
-        function setupIosIcon() {
-            // Jeśli plik apple-touch-icon.png istnieje, używamy go; inaczej generujemy ikonę z Canvasu
-            const probe = new Image();
-            probe.onerror = generateCanvasIcon;
-            probe.src = document.getElementById('apple-touch-icon').href;
-        }
-
-        function generateCanvasIcon() {
-            try {
-                const c = document.createElement('canvas');
-                c.width = 180;
-                c.height = 180;
-                const ctx = c.getContext('2d');
-                const grad = ctx.createLinearGradient(0, 0, 180, 180);
-                grad.addColorStop(0, '#FFFFFF');
-                grad.addColorStop(1, '#D6EEFF');
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, 180, 180);
-                ctx.font = '95px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('💧', 90, 96);
-
-                document.getElementById('apple-touch-icon').href = c.toDataURL('image/png');
-            } catch (e) {}
-        }
-
         // Inicjalizacja aplikacji po załadowaniu
         window.onload = function () {
             applyTheme();
-            setupIosIcon();
             renderAll();
         };
     </script>
