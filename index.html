@@ -343,6 +343,14 @@
                     </button>
                     <input type="file" id="import-file-input" accept=".json,application/json" class="hidden" onchange="importData(event)">
 
+                    <button onclick="openAdminModal()" class="w-full px-4 py-3.5 flex items-center justify-between active:bg-black/5 dark:active:bg-white/5 transition-colors text-left">
+                        <span class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-lg bg-slate-700 text-white flex items-center justify-center text-sm">🔐</span>
+                            <span>Panel administratora</span>
+                        </span>
+                        <span class="text-ios-gray">›</span>
+                    </button>
+
                     <button onclick="confirmResetData()" class="w-full px-4 py-3.5 flex items-center justify-between active:bg-black/5 dark:active:bg-white/5 transition-colors text-left text-ios-red">
                         <span class="flex items-center gap-3">
                             <span class="w-7 h-7 rounded-lg bg-ios-red/15 text-ios-red flex items-center justify-center text-sm">🗑️</span>
@@ -388,7 +396,7 @@
          ========================================== -->
 
     <!-- Modal: Potwierdzenie / Dialog w stylu iOS -->
-    <div id="modal-confirm" class="fixed inset-0 z-50 bg-black/50 hidden flex items-center justify-center p-6">
+    <div id="modal-confirm" class="fixed inset-0 z-[60] bg-black/50 hidden flex items-center justify-center p-6">
         <div class="bg-ios-card dark:bg-ios-darkElevated w-full max-w-xs rounded-2xl overflow-hidden shadow-2xl animate-pop text-center">
             <div class="p-5 space-y-2">
                 <div id="confirm-icon" class="text-4xl mb-1">🎁</div>
@@ -430,8 +438,55 @@
         </div>
     </div>
 
+    <!-- Modal: Panel administratora -->
+    <div id="modal-admin" class="fixed inset-0 z-50 bg-black/50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-ios-card dark:bg-ios-darkCard w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar rounded-t-3xl sm:rounded-3xl p-5 pb-8 sm:pb-5 space-y-4 animate-sheet shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold">🔐 Panel administratora</h3>
+                <button onclick="closeAdminModal()" class="text-sm text-ios-blue font-bold">Zamknij</button>
+            </div>
+
+            <div id="admin-locked" class="space-y-3">
+                <p id="admin-pin-hint" class="text-xs text-ios-gray"></p>
+                <input id="admin-pin-input" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN" class="w-full px-3 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-base text-center tracking-widest outline-none focus:ring-2 focus:ring-ios-blue">
+                <button id="admin-pin-btn" onclick="submitAdminPin()" class="w-full py-2.5 rounded-xl bg-ios-blue text-white text-sm font-bold active:scale-95 transition-transform">Odblokuj</button>
+            </div>
+
+            <div id="admin-unlocked" class="space-y-5 hidden">
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-ios-gray">Punkty (saldo: <span id="admin-balance">0</span> pkt)</h4>
+                    <div class="flex gap-2">
+                        <input id="admin-points-input" type="number" inputmode="numeric" min="1" placeholder="Ilość" class="w-24 px-3 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-base outline-none focus:ring-2 focus:ring-ios-blue">
+                        <input id="admin-points-reason" type="text" maxlength="60" placeholder="Powód (opcjonalnie)" class="flex-1 min-w-0 px-3 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-base outline-none focus:ring-2 focus:ring-ios-blue">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="adminAdjustPoints(1)" class="py-2.5 rounded-xl bg-ios-green text-white text-sm font-bold active:scale-95 transition-transform">+ Dodaj</button>
+                        <button onclick="adminAdjustPoints(-1)" class="py-2.5 rounded-xl bg-ios-red text-white text-sm font-bold active:scale-95 transition-transform">− Odejmij</button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-ios-gray">Nowa nagroda</h4>
+                    <div class="flex gap-2">
+                        <input id="admin-reward-icon" type="text" maxlength="8" placeholder="🎁" class="w-14 px-2 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-base text-center outline-none focus:ring-2 focus:ring-ios-blue">
+                        <input id="admin-reward-title" type="text" maxlength="60" placeholder="Nazwa nagrody" class="flex-1 min-w-0 px-3 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-base outline-none focus:ring-2 focus:ring-ios-blue">
+                        <input id="admin-reward-cost" type="number" inputmode="numeric" min="1" placeholder="pkt" class="w-20 px-3 py-2.5 rounded-xl bg-ios-bg dark:bg-ios-darkElevated text-base outline-none focus:ring-2 focus:ring-ios-blue">
+                    </div>
+                    <button onclick="adminAddReward()" class="w-full py-2.5 rounded-xl bg-ios-blue text-white text-sm font-bold active:scale-95 transition-transform">Dodaj nagrodę</button>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-ios-gray">Nagrody</h4>
+                    <div id="admin-rewards-list" class="rounded-xl bg-ios-bg dark:bg-ios-darkElevated divide-y divide-black/5 dark:divide-white/5 overflow-hidden"></div>
+                </div>
+
+                <button onclick="closeAdminModal()" class="w-full py-2.5 rounded-xl bg-black/5 dark:bg-white/10 text-sm font-bold active:scale-95 transition-transform">🔒 Zablokuj i zamknij</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Powiadomienie Toast (na górze ekranu) -->
-    <div id="toast" class="fixed top-14 inset-x-0 z-50 flex justify-center pointer-events-none hidden px-4">
+    <div id="toast" class="fixed top-14 inset-x-0 z-[70] flex justify-center pointer-events-none hidden px-4">
         <div id="toast-inner" class="bg-slate-900/90 dark:bg-white/95 text-white dark:text-slate-900 ios-blur px-4 py-2.5 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 animate-pop">
             <span id="toast-icon">✅</span>
             <span id="toast-text">Zapisano!</span>
@@ -444,6 +499,7 @@
     <script>
         const STORAGE_KEY = 'ios_water_points_rewards_pwa_v2';
         const LEGACY_STORAGE_KEY = 'ios_points_rewards_pwa_v1';
+        const BACKUP_STORAGE_KEY = 'ios_water_points_rewards_recovery_v1';
         // Ile dni wstecz (poza dzisiejszym) można zaliczać / cofać zadanie
         const MAX_DAYS_BACK = 3;
 
@@ -477,8 +533,22 @@
                     { id: 'r11', title: 'Weekendowy wyjazd', cost: 100, icon: '🏖️' }
                 ],
                 // Historia odebranych nagród i korekt: [{ id, type: 'spend'|'adjust', title, icon, points, dateKey, timestamp }]
-                transactions: []
+                transactions: [],
+                // Nagrody dodane w panelu administratora
+                customRewards: [],
+                adminPinHash: null
             };
+        }
+
+        function buildRewards(customRewards) {
+            return getDefaultState().rewards.concat(customRewards).sort((a, b) => a.cost - b.cost);
+        }
+
+        function isValidCustomReward(r) {
+            return r && typeof r.id === 'string' && /^c_\d+$/.test(r.id) &&
+                typeof r.title === 'string' && r.title.trim() !== '' &&
+                Number.isInteger(r.cost) && r.cost > 0 &&
+                typeof r.icon === 'string';
         }
 
         let state = loadState();
@@ -509,7 +579,33 @@
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (raw) {
-                    return normalizeState(JSON.parse(raw));
+                    try {
+                        const loadedState = parseStoredState(raw);
+                        try {
+                            localStorage.setItem(BACKUP_STORAGE_KEY, raw);
+                        } catch (e) {
+                            console.error('Nie można utworzyć lokalnej kopii zapasowej:', e);
+                        }
+                        return loadedState;
+                    } catch (e) {
+                        console.error('Nie można odczytać głównego zapisu:', e);
+                    }
+                }
+
+                const backupRaw = localStorage.getItem(BACKUP_STORAGE_KEY);
+                if (backupRaw) {
+                    try {
+                        const recoveredState = parseStoredState(backupRaw);
+                        try {
+                            localStorage.setItem(STORAGE_KEY, backupRaw);
+                        } catch (e) {
+                            console.error('Nie można przywrócić głównego zapisu:', e);
+                        }
+                        console.warn('Odzyskano dane z lokalnej kopii zapasowej.');
+                        return recoveredState;
+                    } catch (e) {
+                        console.error('Nie można odczytać lokalnej kopii zapasowej:', e);
+                    }
                 }
 
                 // Sprawdzenie, czy istnieją dane z poprzedniej wersji do migracji
@@ -537,14 +633,25 @@
             }
         }
 
+        function parseStoredState(raw) {
+            const data = JSON.parse(raw);
+            if (!data || typeof data !== 'object' || Array.isArray(data) ||
+                !data.completedDays || typeof data.completedDays !== 'object' || Array.isArray(data.completedDays)) {
+                throw new Error('Nieprawidłowy format zapisanego stanu.');
+            }
+            return normalizeState(data);
+        }
+
         function normalizeState(data) {
-            const defaults = getDefaultState();
+            const customRewards = Array.isArray(data.customRewards) ? data.customRewards.filter(isValidCustomReward) : [];
             return {
                 theme: data.theme === 'dark' ? 'dark' : 'light',
                 manualAdjustment: Number(data.manualAdjustment) || 0,
                 completedDays: data.completedDays && typeof data.completedDays === 'object' ? data.completedDays : {},
-                rewards: defaults.rewards,
-                transactions: Array.isArray(data.transactions) ? data.transactions : []
+                rewards: buildRewards(customRewards),
+                transactions: Array.isArray(data.transactions) ? data.transactions : [],
+                customRewards,
+                adminPinHash: typeof data.adminPinHash === 'string' && /^[0-9a-f]{64}$/.test(data.adminPinHash) ? data.adminPinHash : null
             };
         }
 
@@ -557,7 +664,9 @@
 
         function saveState() {
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                const serializedState = JSON.stringify(state);
+                localStorage.setItem(STORAGE_KEY, serializedState);
+                localStorage.setItem(BACKUP_STORAGE_KEY, serializedState);
             } catch (e) {
                 console.error('Błąd zapisu localStorage:', e);
             }
@@ -1378,7 +1487,9 @@
                         showToast('Nieprawidłowy format pliku kopii', '⚠️');
                         return;
                     }
+                    const currentPinHash = state.adminPinHash;
                     state = normalizeState(imported);
+                    state.adminPinHash = currentPinHash;
                     saveState();
                     renderAll();
                     showToast('Kopia zapasowa została wczytana!', '✅');
@@ -1398,7 +1509,9 @@
                 confirmText: 'Zresetuj',
                 isDestructive: true,
                 onConfirm: () => {
+                    const currentPinHash = state.adminPinHash;
                     state = getDefaultState();
+                    state.adminPinHash = currentPinHash;
                     saveState();
                     renderAll();
                     showToast('Przywrócono ustawienia początkowe', '🔄');
@@ -1543,6 +1656,175 @@
                 }
             }
             requestAnimationFrame(animate);
+        }
+
+        // ==========================================
+        // PANEL ADMINISTRATORA
+        // ==========================================
+        // PIN chroni tylko przed przypadkową edycją – dane i kod są w całości po stronie telefonu.
+        let isAdminUnlocked = false;
+
+        async function hashPin(pin) {
+            const data = new TextEncoder().encode('woda-admin:' + pin);
+            const buf = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function openAdminModal() {
+            isAdminUnlocked = false;
+            renderAdminPanel();
+            document.getElementById('modal-admin').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            isAdminUnlocked = false;
+            document.getElementById('admin-pin-input').value = '';
+            closeModal('modal-admin');
+        }
+
+        function renderAdminPanel() {
+            document.getElementById('admin-locked').classList.toggle('hidden', isAdminUnlocked);
+            document.getElementById('admin-unlocked').classList.toggle('hidden', !isAdminUnlocked);
+
+            if (!isAdminUnlocked) {
+                const hasPin = Boolean(state.adminPinHash);
+                document.getElementById('admin-pin-hint').textContent = hasPin
+                    ? 'Wpisz PIN administratora.'
+                    : 'Ustaw nowy PIN (4–8 cyfr). Zapamiętaj go – nie da się go odzyskać.';
+                document.getElementById('admin-pin-btn').textContent = hasPin ? 'Odblokuj' : 'Ustaw PIN';
+                return;
+            }
+
+            document.getElementById('admin-balance').textContent = getCurrentPointsBalance();
+
+            const listEl = document.getElementById('admin-rewards-list');
+            listEl.innerHTML = '';
+            state.rewards.forEach(reward => {
+                const isCustom = reward.id.startsWith('c_');
+                const row = document.createElement('div');
+                row.className = 'px-3 py-2.5 flex items-center justify-between gap-2 text-xs';
+                row.innerHTML = `
+                    <span class="flex items-center gap-2 min-w-0">
+                        <span class="text-base shrink-0">${escapeHtml(reward.icon || '🎁')}</span>
+                        <span class="font-semibold break-words">${escapeHtml(reward.title)}</span>
+                    </span>
+                    <span class="flex items-center gap-2 shrink-0">
+                        <span class="font-bold text-amber-600 dark:text-amber-400">${reward.cost} pkt</span>
+                        ${isCustom
+                            ? `<button onclick="adminDeleteReward('${reward.id}')" class="text-ios-red font-bold px-1" aria-label="Usuń nagrodę">✕</button>`
+                            : '<span class="text-ios-gray px-1" title="Nagroda domyślna (z kodu)">🔒</span>'}
+                    </span>
+                `;
+                listEl.appendChild(row);
+            });
+        }
+
+        async function submitAdminPin() {
+            const input = document.getElementById('admin-pin-input');
+            const pin = input.value.trim();
+            if (!/^\d{4,8}$/.test(pin)) {
+                showToast('PIN musi mieć 4–8 cyfr', '⚠️');
+                return;
+            }
+
+            const hash = await hashPin(pin);
+            input.value = '';
+            if (!state.adminPinHash) {
+                state.adminPinHash = hash;
+                saveState();
+                showToast('Ustawiono PIN administratora', '🔐');
+            } else if (hash !== state.adminPinHash) {
+                showToast('Nieprawidłowy PIN', '⛔');
+                return;
+            }
+
+            isAdminUnlocked = true;
+            renderAdminPanel();
+        }
+
+        function adminAdjustPoints(sign) {
+            if (!isAdminUnlocked) return;
+            const amountInput = document.getElementById('admin-points-input');
+            const reasonInput = document.getElementById('admin-points-reason');
+            const amount = Number(amountInput.value);
+            if (!Number.isInteger(amount) || amount <= 0 || amount > 10000) {
+                showToast('Podaj liczbę punktów (1–10000)', '⚠️');
+                return;
+            }
+            if (sign < 0 && amount > getCurrentPointsBalance()) {
+                showToast('Saldo nie może być ujemne', '⚠️');
+                return;
+            }
+
+            const delta = sign * amount;
+            const reason = reasonInput.value.trim();
+            state.manualAdjustment = (Number(state.manualAdjustment) || 0) + delta;
+            state.transactions.unshift({
+                id: 'adj_' + Date.now(),
+                type: 'adjust',
+                title: reason ? `Korekta: ${reason}` : 'Korekta administratora',
+                icon: '🛠️',
+                points: delta,
+                dateKey: getTodayDateKey(),
+                timestamp: Date.now()
+            });
+            saveState();
+            renderAll();
+            renderAdminPanel();
+            amountInput.value = '';
+            reasonInput.value = '';
+            showToast(`Korekta salda: ${delta > 0 ? '+' : ''}${delta} pkt`, '🛠️');
+        }
+
+        function adminAddReward() {
+            if (!isAdminUnlocked) return;
+            const iconInput = document.getElementById('admin-reward-icon');
+            const titleInput = document.getElementById('admin-reward-title');
+            const costInput = document.getElementById('admin-reward-cost');
+            const title = titleInput.value.trim();
+            const cost = Number(costInput.value);
+            const icon = Array.from(iconInput.value.trim()).slice(0, 4).join('') || '🎁';
+
+            if (!title) {
+                showToast('Podaj nazwę nagrody', '⚠️');
+                return;
+            }
+            if (!Number.isInteger(cost) || cost <= 0 || cost > 10000) {
+                showToast('Koszt musi być liczbą 1–10000', '⚠️');
+                return;
+            }
+
+            state.customRewards.push({ id: 'c_' + Date.now(), title, cost, icon });
+            state.rewards = buildRewards(state.customRewards);
+            saveState();
+            renderAll();
+            renderAdminPanel();
+            iconInput.value = '';
+            titleInput.value = '';
+            costInput.value = '';
+            showToast(`Dodano nagrodę: ${title}`, '🎁');
+        }
+
+        function adminDeleteReward(rewardId) {
+            if (!isAdminUnlocked) return;
+            const reward = state.customRewards.find(r => r.id === rewardId);
+            if (!reward) return;
+
+            showConfirmDialog({
+                icon: '🗑️',
+                title: 'Usunąć nagrodę?',
+                message: `„${reward.title}” zniknie ze sklepu. Historia wymian pozostanie bez zmian.`,
+                confirmText: 'Usuń',
+                isDestructive: true,
+                onConfirm: () => {
+                    state.customRewards = state.customRewards.filter(r => r.id !== rewardId);
+                    state.rewards = buildRewards(state.customRewards);
+                    saveState();
+                    renderAll();
+                    renderAdminPanel();
+                    showToast('Usunięto nagrodę', '🗑️');
+                }
+            });
         }
 
         // Inicjalizacja aplikacji po załadowaniu
